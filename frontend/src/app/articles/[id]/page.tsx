@@ -7,7 +7,6 @@ import { Footer } from '@/components/layout/Footer';
 import { CommentForm } from '@/components/comment/CommentForm';
 import { CommentList } from '@/components/comment/CommentList';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Loading';
 import { articlesApi, commentsApi, favoritesApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,13 +14,39 @@ import { formatDate } from '@/lib/utils';
 import { Eye, Heart, User, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
+interface Article {
+  id: number;
+  title: string;
+  content?: string;
+  summary?: string;
+  coverImage?: string;
+  categoryName?: string;
+  authorName?: string;
+  tags?: string;
+  status: number;
+  viewCount: number;
+  likeCount: number;
+  favoriteCount: number;
+  isFavorited?: boolean;
+  createTime: string;
+}
+
+interface Comment {
+  id: number;
+  content: string;
+  userName?: string;
+  userAvatar?: string;
+  createTime?: string;
+  children?: Comment[];
+}
+
 export default function ArticleDetailPage() {
   const params = useParams();
   const id = Number(params.id);
   const { isAuthenticated } = useAuth();
 
-  const [article, setArticle] = useState<Record<string, unknown> | null>(null);
-  const [comments, setComments] = useState([]);
+  const [article, setArticle] = useState<Article | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -62,16 +87,15 @@ export default function ArticleDetailPage() {
         </Link>
 
         <article>
-          {/* Header */}
           <div className="mb-8">
-            {(article as Record<string, unknown>).categoryName && (
-              <Badge variant="green" className="mb-3">{(article as Record<string, unknown>).categoryName as string}</Badge>
+            {article.categoryName && (
+              <Badge variant="green" className="mb-3">{article.categoryName}</Badge>
             )}
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{(article as Record<string, unknown>).title as string}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">{article.title}</h1>
             <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span className="flex items-center gap-1"><User className="w-4 h-4" />{(article as Record<string, unknown>).authorName as string || '匿名'}</span>
-              <span>{formatDate((article as Record<string, unknown>).createTime as string)}</span>
-              <span className="flex items-center gap-1"><Eye className="w-4 h-4" />{(article as Record<string, unknown>).viewCount as number || 0}</span>
+              <span className="flex items-center gap-1"><User className="w-4 h-4" />{article.authorName || '匿名'}</span>
+              <span>{formatDate(article.createTime)}</span>
+              <span className="flex items-center gap-1"><Eye className="w-4 h-4" />{article.viewCount || 0}</span>
               <button onClick={handleFavorite} className="flex items-center gap-1 ml-auto">
                 <Heart className={`w-5 h-5 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
                 <span className="text-sm">{isFavorited ? '已收藏' : '收藏'}</span>
@@ -79,25 +103,21 @@ export default function ArticleDetailPage() {
             </div>
           </div>
 
-          {/* Cover */}
-          {(article as Record<string, unknown>).coverImage && (
-            <img src={(article as Record<string, unknown>).coverImage as string} alt="" className="w-full h-64 md:h-96 object-cover rounded-xl mb-8" />
+          {article.coverImage && (
+            <img src={article.coverImage} alt="" className="w-full h-64 md:h-96 object-cover rounded-xl mb-8" />
           )}
 
-          {/* Content */}
-          <div className="prose prose-emerald max-w-none mb-12" dangerouslySetInnerHTML={{ __html: (article as Record<string, unknown>).content as string || '' }} />
+          <div className="prose prose-emerald max-w-none mb-12" dangerouslySetInnerHTML={{ __html: article.content || '' }} />
 
-          {/* Tags */}
-          {(article as Record<string, unknown>).tags && (
+          {article.tags && (
             <div className="flex gap-2 mb-8">
-              {((article as Record<string, unknown>).tags as string).split(',').map((tag: string, i: number) => (
+              {article.tags.split(',').map((tag: string, i: number) => (
                 <Badge key={i} variant="blue">{tag.trim()}</Badge>
               ))}
             </div>
           )}
         </article>
 
-        {/* Comments */}
         <section className="border-t border-gray-200 pt-8">
           <h2 className="text-xl font-bold mb-6">评论 ({comments.length})</h2>
           {isAuthenticated ? (
