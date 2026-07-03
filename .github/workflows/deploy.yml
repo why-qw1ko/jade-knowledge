@@ -43,17 +43,22 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install & Build Frontend
-        run: |
-          cd frontend
-          npm ci
-          npm run build
+      - name: Install dependencies
+        run: cd frontend && npm install
+
+      - name: Build frontend
+        run: cd frontend && npm run build
 
       - name: Upload frontend artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
-          path: frontend/.next/
+          path: |
+            frontend/package.json
+            frontend/package-lock.json
+            frontend/.next/
+            frontend/public/
+            frontend/next.config.ts
           retention-days: 1
 
   deploy:
@@ -74,15 +79,26 @@ jobs:
           name: frontend-build
           path: ./artifacts/frontend
 
-      - name: Deploy to Server
+      - name: Deploy backend to Server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "artifacts/backend/*.jar,artifacts/frontend/*"
-          target: ${{ env.DEPLOY_PATH }}
+          port: 22
+          source: "artifacts/backend/*.jar"
+          target: ${{ env.DEPLOY_PATH }}/backend/
+          strip_components: 3
+
+      - name: Deploy frontend to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          source: "artifacts/frontend/*"
+          target: ${{ env.DEPLOY_PATH }}/frontend/
           strip_components: 2
 
       - name: Restart Services
@@ -91,21 +107,32 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
+          port: 22
           script: |
-            cd ${{ env.DEPLOY_PATH }}
+            cd /www/wwwroot/jade-knowledge
 
             # 停止旧后端
             if [ -f backend.pid ]; then
               kill $(cat backend.pid) 2>/dev/null || true
+              rm -f backend.pid
               sleep 2
             fi
+            pkill -f 'jade-knowledge' 2>/dev/null || true
 
             # 启动新后端
-            nohup java -jar backend.jar --spring.profiles.active=prod > backend.log 2>&1 &
-            echo $! > backend.pid
+            JAR=$(ls backend/*.jar 2>/dev/null | head -1)
+            if [ -n "$JAR" ]; then
+              nohup java -jar "$JAR" --spring.profiles.active=prod > logs/backend.log 2>&1 &
+              echo $! > backend.pid
+              echo "✅ 后端启动完成 PID:$(cat backend.pid)"
+            else
+              echo "❌ 未找到 JAR 包"
+            fi
 
-            # 重启前端 (PM2)
-            pm2 restart jade-frontend || pm2 start npm --name jade-frontend -- start
+            # 重启前端
+            cd frontend
+            npm install --production 2>/dev/null
+            cd ..
+            pm2 restart jade-frontend || cd frontend && pm2 start npm --name jade-frontend -- start
 
             echo "✅ 部署完成"
