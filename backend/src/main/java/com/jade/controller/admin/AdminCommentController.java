@@ -19,6 +19,15 @@ public class AdminCommentController {
 
     private final CommentService commentService;
 
+    @Operation(summary = "评论列表")
+    @GetMapping
+    public Result<IPage<CommentVO>> list(
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "10") Integer pageSize) {
+        return Result.success(commentService.listAll(status, pageNum, pageSize));
+    }
+
     @Operation(summary = "待审核评论列表")
     @GetMapping("/pending")
     public Result<IPage<CommentVO>> pendingList(
@@ -38,6 +47,17 @@ public class AdminCommentController {
     @PostMapping("/{id}/reject")
     public Result<Void> reject(@PathVariable Long id, @AuthenticationPrincipal LoginUser loginUser) {
         commentService.reject(id, loginUser.getUserId());
+        return Result.success();
+    }
+
+    @Operation(summary = "编辑评论")
+    @PutMapping("/{id}")
+    public Result<Void> update(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        String content = body.get("content");
+        if (content == null || content.isBlank()) {
+            return Result.error(400, "评论内容不能为空");
+        }
+        commentService.update(id, content);
         return Result.success();
     }
 

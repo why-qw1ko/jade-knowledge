@@ -6,7 +6,7 @@ import { AdminSidebar } from '@/components/layout/AdminSidebar';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isAdmin, user } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,9 +17,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthenticated || !isAdmin) return null;
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
       <AdminSidebar />
-      <main className="flex-1 bg-gray-50 p-8">{children}</main>
+      <main className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        {children}
+      </main>
     </div>
   );
 }

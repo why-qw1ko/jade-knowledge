@@ -25,14 +25,19 @@ public class CommentController {
     public Result<IPage<CommentVO>> listByArticle(
             @PathVariable Long articleId,
             @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        return Result.success(commentService.listByArticle(articleId, pageNum, pageSize));
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @AuthenticationPrincipal LoginUser loginUser) {
+        Long userId = loginUser != null ? loginUser.getUserId() : null;
+        return Result.success(commentService.listByArticle(articleId, pageNum, pageSize, userId));
     }
 
     @Operation(summary = "发表评论")
     @PostMapping
     public Result<Void> create(@PathVariable Long articleId, @RequestBody CommentDTO dto,
                                @AuthenticationPrincipal LoginUser loginUser) {
+        if (loginUser == null) {
+            return Result.unauthorized("请先登录");
+        }
         dto.setArticleId(articleId);
         commentService.create(dto, loginUser.getUserId());
         return Result.success();

@@ -1,3 +1,8 @@
+# Root (防止误在根目录 npm install)
+/node_modules/
+/package.json
+/package-lock.json
+
 # Backend
 backend/target/
 backend/.mvn/
@@ -24,6 +29,10 @@ Thumbs.db
 .env
 .env.local
 .env.production
+
+# Uploads (开发环境本地上传的文件，不提交到git)
+images/*
+!images/.gitkeep
 
 # Logs
 logs/

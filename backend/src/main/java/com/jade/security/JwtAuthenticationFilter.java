@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/articles/**",
             "/api/categories/**",
             "/api/search",
+            "/api/banners/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/favicon.ico"
@@ -36,16 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-
-        // 白名单路径跳过
-        for (String pattern : WHITE_LIST) {
-            if (pathMatcher.match(pattern, path)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
-
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);

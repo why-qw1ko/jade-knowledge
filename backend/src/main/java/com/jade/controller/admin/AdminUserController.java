@@ -62,4 +62,11 @@ public class AdminUserController {
         userService.assignRoles(id, roleIds);
         return Result.success();
     }
+
+    @Operation(summary = "重置密码")
+    @PutMapping("/{id}/password")
+    public Result<Void> resetPassword(@PathVariable Long id, @RequestParam String newPassword) {
+        userService.resetPassword(id, newPassword);
+        return Result.success();
+    }
 }

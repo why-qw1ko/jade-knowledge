@@ -2,21 +2,25 @@ import { cn } from '@/lib/utils';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'green' | 'yellow' | 'red' | 'gray' | 'blue';
+  variant?: 'green' | 'yellow' | 'red' | 'gray' | 'blue' | 'purple';
   className?: string;
 }
 
-const variants = {
-  green: 'bg-emerald-100 text-emerald-700',
-  yellow: 'bg-yellow-100 text-yellow-700',
-  red: 'bg-red-100 text-red-700',
-  gray: 'bg-gray-100 text-gray-600',
-  blue: 'bg-blue-100 text-blue-700',
+const variantStyles: Record<string, React.CSSProperties> = {
+  green: { backgroundColor: 'var(--status-success-bg)', color: 'var(--status-success)' },
+  yellow: { backgroundColor: 'var(--status-warning-bg)', color: 'var(--status-warning)' },
+  red: { backgroundColor: 'var(--status-danger-bg)', color: 'var(--status-danger)' },
+  gray: { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-muted)' },
+  blue: { backgroundColor: 'var(--status-info-bg)', color: 'var(--status-info)' },
+  purple: { backgroundColor: '#f3e8ff', color: '#9333ea' },
 };
 
 export function Badge({ children, variant = 'gray', className }: BadgeProps) {
   return (
-    <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', variants[variant], className)}>
+    <span
+      className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', className)}
+      style={variantStyles[variant]}
+    >
       {children}
     </span>
   );

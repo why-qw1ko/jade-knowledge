@@ -3,6 +3,7 @@ package com.jade.controller.admin;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jade.common.Result;
 import com.jade.model.dto.ArticleDTO;
+import com.jade.model.entity.Article;
 import com.jade.model.vo.ArticleDetailVO;
 import com.jade.model.vo.ArticleVO;
 import com.jade.security.LoginUser;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "后台文章管理")
 @RestController
@@ -64,5 +67,11 @@ public class AdminArticleController {
     public Result<Void> delete(@PathVariable Long id) {
         articleService.delete(id);
         return Result.success();
+    }
+
+    @Operation(summary = "按标题搜索文章（供轮播图选择器使用）")
+    @GetMapping("/search")
+    public Result<List<Article>> searchByTitle(@RequestParam String title) {
+        return Result.success(articleService.searchByTitle(title));
     }
 }

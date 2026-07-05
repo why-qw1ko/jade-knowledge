@@ -6,9 +6,12 @@ import com.jade.model.entity.CrawlTask;
 
 public interface CrawlService {
     void triggerCrawl(String keyword);
+    Long generateArticle(String prompt, Long userId);
+    Long saveGeneratedArticle(String prompt, String title, String content, String summary, Long userId);
     IPage<CrawlResult> listResults(Integer pageNum, Integer pageSize, Integer status);
     void approveResult(Long id, Long auditorId);
     void rejectResult(Long id, Long auditorId, String remark);
     Long publishResult(Long id, Long auditorId);
     IPage<CrawlTask> listTasks(Integer pageNum, Integer pageSize);
+    void deleteTask(Long id);
 }

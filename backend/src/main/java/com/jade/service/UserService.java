@@ -12,5 +12,6 @@ public interface UserService {
     void update(Long id, UserDTO dto);
     void delete(Long id);
     void assignRoles(Long userId, List<Long> roleIds);
+    void resetPassword(Long id, String newPassword);
     UserVO getCurrentUser();
 }

@@ -20,24 +20,36 @@ const iconMap: Record<string, React.ElementType> = {
   settings: Settings,
 };
 
+const colorMap: Record<string, { bg: string; fg: string }> = {
+  emerald: { bg: 'var(--status-success-bg)', fg: 'var(--status-success)' },
+  blue: { bg: 'var(--status-info-bg)', fg: 'var(--status-info)' },
+  yellow: { bg: 'var(--status-warning-bg)', fg: 'var(--status-warning)' },
+  red: { bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)' },
+};
+
 export function StatsCard({ title, value, icon, color = 'emerald' }: StatsCardProps) {
   const Icon = iconMap[icon] || FileText;
-  const colors: Record<string, string> = {
-    emerald: 'bg-emerald-50 text-emerald-600',
-    blue: 'bg-blue-50 text-blue-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-    red: 'bg-red-50 text-red-600',
-  };
+  const c = colorMap[color] || colorMap.emerald;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div
+      className="rounded-lg p-5"
+      style={{
+        backgroundColor: 'var(--bg-card)',
+        border: '1px solid var(--border-primary)',
+        boxShadow: 'var(--shadow-sm)',
+      }}
+    >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>{title}</p>
+          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{value}</p>
         </div>
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors[color] || colors.emerald}`}>
-          <Icon className="w-6 h-6" />
+        <div
+          className="w-11 h-11 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: c.bg, color: c.fg }}
+        >
+          <Icon className="w-5 h-5" />
         </div>
       </div>
     </div>

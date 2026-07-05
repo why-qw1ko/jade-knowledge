@@ -1,6 +1,5 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { CheckCircle, XCircle, Info, X } from 'lucide-react';
 
 interface ToastItem {
@@ -20,10 +19,10 @@ const icons = {
   info: Info,
 };
 
-const colors = {
-  success: 'bg-emerald-50 border-emerald-200 text-emerald-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
+const colorStyles: Record<string, React.CSSProperties> = {
+  success: { backgroundColor: 'var(--status-success-bg)', borderColor: 'var(--status-success)', color: 'var(--status-success)' },
+  error: { backgroundColor: 'var(--status-danger-bg)', borderColor: 'var(--status-danger)', color: 'var(--status-danger)' },
+  info: { backgroundColor: 'var(--status-info-bg)', borderColor: 'var(--status-info)', color: 'var(--status-info)' },
 };
 
 export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
@@ -34,14 +33,20 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
         return (
           <div
             key={toast.id}
-            className={cn(
-              'flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg min-w-[300px] animate-in slide-in-from-right',
-              colors[toast.type]
-            )}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg min-w-[300px] animate-in slide-in-from-right"
+            style={{
+              ...colorStyles[toast.type],
+              backgroundColor: colorStyles[toast.type].backgroundColor,
+              borderColor: colorStyles[toast.type].borderColor,
+            }}
           >
             <Icon className="w-5 h-5 flex-shrink-0" />
-            <p className="text-sm flex-1">{toast.message}</p>
-            <button onClick={() => onRemove(toast.id)} className="p-0.5 hover:opacity-70">
+            <p className="text-sm flex-1" style={{ color: 'var(--text-primary)' }}>{toast.message}</p>
+            <button
+              onClick={() => onRemove(toast.id)}
+              className="p-0.5 hover:opacity-70"
+              style={{ color: 'var(--text-muted)' }}
+            >
               <X className="w-4 h-4" />
             </button>
           </div>

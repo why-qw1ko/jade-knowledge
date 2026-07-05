@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/jade_knowledge?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://82.156.243.24:3307/jade_knowledge?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: root
+    password: ${DB_PASSWORD:bulengbuleng}
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
@@ -17,23 +17,99 @@ spring:
           max-idle: 8
           min-idle: 0
 
+# Elasticsearch 开关（true=使用ES搜索，false=降级为MySQL全文搜索）
+app:
+  elasticsearch:
+    enabled: ${ES_ENABLED:false}
+
 # JWT配置
 jwt:
   secret: Jk8s2D9fGh3jKl5mN7pQ9rSt0uVwXyZ1aBcDeFgHiJkLmNoPqRsTuVwXyZ
-  access-token-expiration: 7200000    # 2小时
-  refresh-token-expiration: 604800000 # 7天
+  access-expire: 7200    # 2小时（秒）
+  refresh-expire: 604800 # 7天（秒）
 
-# AI配置
+# AI配置 — 切换服务商只需修改下面三项
+# 常用服务商配置参考（取消注释并填入 api-key 即可）:
+#
+# --- DeepSeek (默认) ---
+#   api-url: https://api.deepseek.com/v1/chat/completions
+#   model: deepseek-chat
+#
+# --- 通义千问 / Qwen (阿里 DashScope) ---
+#   api-url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
+#   model: qwen-plus
+#
+# --- 智谱 GLM / ChatGLM ---
+#   api-url: https://open.bigmodel.cn/api/paas/v4/chat/completions
+#   model: glm-4-flash
+#
+# --- 豆包 / Doubao (字节跳动火山引擎) ---
+#   api-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+#   model: doubao-pro-32k
+#
+# --- 文心一言 / ERNIE (百度千帆) ---
+#   api-url: https://qianfan.baidubce.com/v2/chat/completions
+#   model: ernie-4.0-8k
+#
+# --- Kimi / Moonshot (月之暗面) ---
+#   api-url: https://api.moonshot.cn/v1/chat/completions
+#   model: moonshot-v1-8k
+#
+# --- 百川 / Baichuan ---
+#   api-url: https://api.baichuan-ai.com/v1/chat/completions
+#   model: Baichuan4
+#
+# --- MiniMax (abab) ---
+#   api-url: https://api.minimax.chat/v1/text/chatcompletion_v2
+#   model: abab6.5-chat
+#
+# --- 讯飞星火 / Spark ---
+#   api-url: https://spark-api-open.xf-yun.com/v1/chat/completions
+#   model: generalv3.5
+#
+# --- 零一万物 / Yi ---
+#   api-url: https://api.lingyiwanwu.com/v1/chat/completions
+#   model: yi-large
+#
+# --- OpenAI ---
+#   api-url: https://api.openai.com/v1/chat/completions
+#   model: gpt-4o
+
+# AI配置 — 默认值，实际配置通过后台「系统配置」页面保存到数据库
 ai:
-  provider: openai
-  api-key: your-api-key-here
-  api-url: https://api.openai.com/v1/chat/completions
-  model: gpt-4o
+  api-key:
+  api-url: https://api.deepseek.com/v1/chat/completions
+  model: deepseek-chat
 
+# ============================================================================
 # 文件上传配置
+# ============================================================================
+# 上传的文件（轮播图、文章图片、视频等）保存到此目录。
+#
+# path       — 服务器磁盘上的物理存储路径（绝对路径或相对路径均可）
+#              开发环境默认使用项目根目录下的 images/ 文件夹
+#              ⚠️ 相对路径是相对于 JVM 工作目录，即 backend/ 的上级目录
+#
+# url-prefix — 前端访问上传文件的URL前缀，必须以 / 开头
+#              前端拿到的 url 格式为: {url-prefix}/images/{文件名}
+#              实际请求会被 WebMvcConfig 映射到磁盘文件
+#
+# 使用示例：
+#   1. 启动后端，上传图片后返回 { "url": "/upload/2024/07/03/abc123.jpg" }
+#   2. 前端拼接完整地址: http://localhost:8080/upload/2024/07/03/abc123.jpg
+#   3. 后端 WebMvcConfig 将 /upload/** 映射到 images/ 目录，返回文件内容
+#
+# 实际存储路径示例:
+#   D:/Users/不冷/jade_knowledge/backend/images/2024/07/03/abc123.jpg
+#
+# 自定义路径示例（取消注释并修改）：
+#   path: D:/my-uploads          # Windows 绝对路径
+#   path: /home/user/uploads     # Linux 绝对路径
+#   path: ./my-custom-images     # 相对路径
+# ============================================================================
 upload:
-  path: /data/uploads
-  url-prefix: /uploads
+  path: D:/Users/不冷/jade_knowledge/backend/images
+  url-prefix: /upload
 
 # 爬虫配置
 crawl:

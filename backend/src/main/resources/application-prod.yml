@@ -1,18 +1,4 @@
-server:
-  port: 8080
-
 spring:
-  profiles:
-    active: prod
-  application:
-    name: jade-knowledge
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 100MB
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: Asia/Shanghai
   datasource:
     url: jdbc:mysql://82.156.243.24:3307/jade_knowledge?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
@@ -24,6 +10,11 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD:}
       database: 0
+
+# Elasticsearch 开关（true=使用ES搜索，false=降级为MySQL全文搜索）
+app:
+  elasticsearch:
+    enabled: ${ES_ENABLED:false}
 
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
@@ -46,6 +37,34 @@ jwt:
   secret: ${JWT_SECRET:Jk8s2D9fGh3jKl5mN7pQ9rSt0uVwXyZ1aBcDeFgHiJkLmNoPqRsTuVwXyZ}
   access-expire: 7200
   refresh-expire: 604800
+
+# AI配置 — 默认值，实际配置通过后台「系统配置」页面保存到数据库
+ai:
+  api-key:
+  api-url: https://api.deepseek.com/v1/chat/completions
+  model: deepseek-chat
+
+# ============================================================================
+# 文件上传配置（生产环境）
+# ============================================================================
+# 生产环境通过环境变量 UPLOAD_PATH 指定上传目录，默认为服务器上的 /data/uploads
+# 部署时需确保该目录存在且有写入权限：mkdir -p /data/uploads
+#
+# 环境变量（在服务器 .env 或 systemd service 中配置）：
+#   UPLOAD_PATH  — 文件存储的物理路径，默认 /data/uploads
+#
+# ⚠️ 生产环境务必使用绝对路径，避免因工作目录不同导致文件丢失
+# ⚠️ Nginx 反向代理时需配置 /uploads/ 路径直接由 Nginx 提供静态文件（更高效）
+#    参考 nginx 配置：
+#    location /upload/ {
+#        alias /data/uploads/;
+#        expires 30d;
+#        add_header Cache-Control "public, immutable";
+#    }
+# ============================================================================
+upload:
+  path: ${UPLOAD_PATH:/data/uploads}
+  url-prefix: /upload
 
 logging:
   level:

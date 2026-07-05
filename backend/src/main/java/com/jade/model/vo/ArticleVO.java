@@ -1,5 +1,6 @@
 package com.jade.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -18,5 +19,6 @@ public class ArticleVO {
     private Long favoriteCount;
     private Long commentCount;
     private Integer isTop;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 }

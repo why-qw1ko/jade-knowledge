@@ -13,6 +13,7 @@ export function CommentForm({ articleId, onSuccess }: CommentFormProps) {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async () => {
     if (!content.trim()) {
@@ -25,12 +26,20 @@ export function CommentForm({ articleId, onSuccess }: CommentFormProps) {
     }
     setLoading(true);
     setError('');
+    setSuccess('');
     try {
       await commentsApi.create(articleId, { content: content.trim() });
       setContent('');
+      setSuccess('评论发表成功');
       onSuccess?.();
-    } catch {
-      setError('评论发表失败');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: unknown) {
+      const e = err as Record<string, unknown>;
+      if (e?.code === 401) {
+        setError('请先登录后再评论');
+      } else {
+        setError((e?.message as string) || '评论发表失败，请稍后重试');
+      }
     } finally {
       setLoading(false);
     }
@@ -40,16 +49,32 @@ export function CommentForm({ articleId, onSuccess }: CommentFormProps) {
     <div className="space-y-2">
       <textarea
         value={content}
-        onChange={(e) => { setContent(e.target.value); setError(''); }}
+        onChange={(e) => { setContent(e.target.value); setError(''); setSuccess(''); }}
         placeholder="写下你的评论..."
-        className="w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[100px]"
+        className="w-full p-3 rounded-lg text-sm resize-none focus:outline-none min-h-[100px]"
+        style={{
+          backgroundColor: 'var(--bg-input)',
+          border: '1px solid var(--border-primary)',
+          color: 'var(--text-primary)',
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = 'var(--border-focus)';
+          e.currentTarget.style.boxShadow = 'none';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = 'var(--border-primary)';
+          e.currentTarget.style.boxShadow = 'none';
+        }}
         maxLength={500}
       />
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-400">{content.length}/500</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{content.length}/500</span>
+          {success && <span className="text-xs" style={{ color: 'var(--status-success)' }}>{success}</span>}
+          {error && <span className="text-xs" style={{ color: 'var(--status-danger)' }}>{error}</span>}
+        </div>
         <Button size="sm" onClick={handleSubmit} loading={loading}>发表评论</Button>
       </div>
-      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }

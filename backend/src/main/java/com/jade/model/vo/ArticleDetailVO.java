@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class ArticleDetailVO extends ArticleVO {
     private String content;
+    private String contentFormat;
     private String tags;
     private String source;
     private String sourceUrl;

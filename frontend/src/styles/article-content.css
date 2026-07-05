@@ -1,0 +1,290 @@
+/* Article Content Styles - 玉石知识平台 */
+
+.article-content {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+
+/* 首行缩进 - 对段落生效，但不对标题、列表、引用等内的段落生效 */
+.article-content > p,
+.article-content p:not(li p):not(blockquote p):not(.no-indent p) {
+  text-indent: 2em;
+  margin-bottom: 1.5em;
+}
+
+/* 标题样式 */
+.article-content h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-top: 2.5em;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--brand-primary);
+  color: var(--text-primary);
+}
+
+.article-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+  padding-left: 0.75em;
+  border-left: 4px solid var(--brand-primary);
+  color: var(--text-primary);
+}
+
+.article-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.75em;
+  margin-bottom: 0.75em;
+  color: var(--text-primary);
+}
+
+.article-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: var(--text-primary);
+}
+
+/* 段落 */
+.article-content p {
+  margin-bottom: 1.5em;
+  color: var(--text-primary);
+}
+
+/* 链接 */
+.article-content a {
+  color: var(--brand-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.article-content a:hover {
+  border-bottom-color: var(--brand-primary);
+}
+
+/* 粗体和斜体 */
+.article-content strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.article-content em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* 引用块 */
+.article-content blockquote {
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
+  border-left: 4px solid var(--brand-primary);
+  background-color: var(--brand-light);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.article-content blockquote p {
+  text-indent: 0;
+  margin-bottom: 0.5em;
+}
+
+.article-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* 代码块 */
+.article-content pre {
+  margin: 1.5em 0;
+  padding: 1.25em;
+  background-color: #1e293b;
+  border-radius: 8px;
+  overflow-x: auto;
+  position: relative;
+}
+
+.article-content pre code {
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  padding: 0;
+  background: none;
+  border: none;
+  text-indent: 0;
+}
+
+.article-content pre::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f56;
+  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+}
+
+.article-content pre code::before {
+  display: none;
+}
+
+/* 行内代码 */
+.article-content code {
+  padding: 0.2em 0.4em;
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: var(--status-danger);
+}
+
+.article-content pre code {
+  padding: 0;
+  background: none;
+  color: #e2e8f0;
+}
+
+/* 表格 */
+.article-content table {
+  width: 100%;
+  margin: 1.5em 0;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+}
+
+.article-content thead {
+  background-color: var(--brand-light);
+}
+
+.article-content th {
+  padding: 0.75em 1em;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--brand-primary);
+}
+
+.article-content td {
+  padding: 0.75em 1em;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+.article-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.article-content tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+/* 列表 */
+.article-content ul,
+.article-content ol {
+  margin: 1.5em 0;
+  padding-left: 2em;
+}
+
+.article-content ul {
+  list-style: none;
+}
+
+.article-content ul li {
+  position: relative;
+  padding-left: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.article-content ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--brand-primary);
+}
+
+.article-content ol li {
+  margin-bottom: 0.75em;
+  padding-left: 0.5em;
+}
+
+.article-content ol li::marker {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.article-content li p {
+  text-indent: 0;
+  margin-bottom: 0.5em;
+}
+
+.article-content li p:last-child {
+  margin-bottom: 0;
+}
+
+/* 分割线 */
+.article-content hr {
+  margin: 2em 0;
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-primary), transparent);
+}
+
+/* 图片 */
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 任务列表 */
+.article-content input[type="checkbox"] {
+  margin-right: 0.5em;
+  accent-color: var(--brand-primary);
+}
+
+/* 脚注 */
+.article-content sup {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+/* 键盘按键 */
+.article-content kbd {
+  padding: 0.2em 0.4em;
+  font-size: 0.85em;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式适配 */
+[data-theme="dark"] .article-content pre {
+  background-color: #0f172a;
+}
+
+[data-theme="dark"] .article-content blockquote {
+  background-color: rgba(var(--brand-primary-rgb, 16, 185, 129), 0.1);
+}
+
+[data-theme="dark"] .article-content .purple {
+  background-color: #3b0764;
+  color: #c084fc;
+}

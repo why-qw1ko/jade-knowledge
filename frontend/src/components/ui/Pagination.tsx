@@ -26,7 +26,10 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
-        className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+        className="p-2 rounded-md disabled:opacity-50 transition-colors"
+        style={{ color: 'var(--text-secondary)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-hover)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
@@ -35,12 +38,18 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           key={idx}
           onClick={() => typeof page === 'number' && onPageChange(page)}
           disabled={page === '...'}
-          className={cn(
-            'px-3 py-1.5 rounded-lg text-sm',
+          className="px-3 py-1.5 rounded-md text-sm transition-colors"
+          style={
             page === currentPage
-              ? 'bg-emerald-600 text-white'
-              : 'hover:bg-gray-100 text-gray-600'
-          )}
+              ? { backgroundColor: 'var(--brand-primary)', color: '#ffffff' }
+              : { color: 'var(--text-secondary)' }
+          }
+          onMouseEnter={(e) => {
+            if (page !== currentPage) e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
+          }}
+          onMouseLeave={(e) => {
+            if (page !== currentPage) e.currentTarget.style.backgroundColor = 'transparent';
+          }}
         >
           {page}
         </button>
@@ -48,7 +57,10 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= totalPages}
-        className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50"
+        className="p-2 rounded-md disabled:opacity-50 transition-colors"
+        style={{ color: 'var(--text-secondary)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-hover)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
         <ChevronRight className="w-4 h-4" />
       </button>

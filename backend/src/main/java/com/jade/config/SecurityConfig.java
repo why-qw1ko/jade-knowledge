@@ -40,10 +40,12 @@ public class SecurityConfig {
             "/api/articles/**",
             "/api/categories/**",
             "/api/search/**",
+            "/api/banners/**",
+            "/api/announcements/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-ui.html",
-            "/uploads/**"
+            "/upload/**"
     };
 
     @Bean

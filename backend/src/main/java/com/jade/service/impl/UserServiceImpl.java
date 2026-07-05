@@ -26,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
+    private final ArticleMapper articleMapper;
+    private final CommentMapper commentMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -80,7 +82,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
+        // 检查用户是否有文章
+        Long articleCount = articleMapper.selectCount(
+                new LambdaQueryWrapper<Article>().eq(Article::getAuthorId, id));
+        if (articleCount > 0) {
+            throw new BusinessException("该用户有 " + articleCount + " 篇文章，请先转移或删除文章后再删除用户");
+        }
+
+        // 检查用户是否有评论
+        Long commentCount = commentMapper.selectCount(
+                new LambdaQueryWrapper<Comment>().eq(Comment::getUserId, id));
+        if (commentCount > 0) {
+            throw new BusinessException("该用户有 " + commentCount + " 条评论，无法删除");
+        }
+
+        // 删除用户角色关联
+        userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, id));
+
         userMapper.deleteById(id);
+    }
+
+    @Override
+    public void resetPassword(Long id, String newPassword) {
+        User user = userMapper.selectById(id);
+        if (user == null) throw new BusinessException("用户不存在");
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userMapper.updateById(user);
     }
 
     @Override

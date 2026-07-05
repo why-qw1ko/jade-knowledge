@@ -29,12 +29,15 @@ public class CommentServiceImpl implements CommentService {
     private final SystemConfigService systemConfigService;
 
     @Override
-    public IPage<CommentVO> listByArticle(Long articleId, Integer pageNum, Integer pageSize) {
-        // 获取顶级评论
+    public IPage<CommentVO> listByArticle(Long articleId, Integer pageNum, Integer pageSize, Long currentUserId) {
+        // 获取顶级评论：已审核的 + 当前用户自己发的待审核评论
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<Comment>()
                 .eq(Comment::getArticleId, articleId)
                 .eq(Comment::getParentId, 0)
-                .eq(Comment::getStatus, 1)
+                .and(w -> w
+                        .eq(Comment::getStatus, 1)
+                        .or(o -> o.eq(Comment::getStatus, 0).eq(Comment::getUserId, currentUserId))
+                )
                 .orderByDesc(Comment::getCreateTime);
         IPage<Comment> page = commentMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return page.convert(c -> toVO(c, true));
@@ -57,6 +60,17 @@ public class CommentServiceImpl implements CommentService {
         articleMapper.update(null, new com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper<Article>()
                 .eq(Article::getId, dto.getArticleId())
                 .setSql("comment_count = comment_count + 1"));
+    }
+
+    @Override
+    public IPage<CommentVO> listAll(Integer status, Integer pageNum, Integer pageSize) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        if (status != null) {
+            wrapper.eq(Comment::getStatus, status);
+        }
+        wrapper.orderByDesc(Comment::getCreateTime);
+        IPage<Comment> page = commentMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        return page.convert(c -> toVO(c, false));
     }
 
     @Override
@@ -85,6 +99,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public void update(Long id, String content) {
+        Comment comment = commentMapper.selectById(id);
+        if (comment == null) throw new BusinessException("评论不存在");
+        comment.setContent(content);
+        commentMapper.updateById(comment);
+    }
+
+    @Override
     public void delete(Long id) {
         commentMapper.deleteById(id);
     }
@@ -93,11 +115,18 @@ public class CommentServiceImpl implements CommentService {
         CommentVO vo = new CommentVO();
         vo.setId(c.getId());
         vo.setContent(c.getContent());
+        vo.setArticleId(c.getArticleId());
         vo.setUserId(c.getUserId());
         vo.setParentId(c.getParentId());
         vo.setReplyUserId(c.getReplyUserId());
         vo.setStatus(c.getStatus());
         vo.setCreateTime(c.getCreateTime());
+
+        // 文章信息（包含已软删除的文章，确保评论始终能显示所属文章标题）
+        Article article = articleMapper.selectByIdIncludeDeleted(c.getArticleId());
+        if (article != null) {
+            vo.setArticleTitle(article.getTitle());
+        }
 
         // 用户信息
         User user = userMapper.selectById(c.getUserId());
